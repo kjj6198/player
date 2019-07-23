@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
 const SideNav = styled.div`
-  display: grid;
+  display: flex;
+  flex-direction: column;
   position: fixed;
   left: 0;
   right: 0;
@@ -13,6 +14,10 @@ const SideNav = styled.div`
   padding: 15px;
   border-right: 1px solid #efefef;
   overflow-y: auto;
+
+  & > div {
+    margin-bottom: 5px;
+  }
 `;
 
 export default SideNav;
