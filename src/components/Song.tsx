@@ -7,19 +7,24 @@ const SongItem = styled.div`
   cursor: pointer;
 `;
 
+const Text = styled.span<{ isActive: boolean }>`
+  font-weight: ${props => (props.isActive ? 'bold' : 'normal')};
+`;
+
 type Props = {
   name: string;
   path: string;
   order: number;
+  isActive?: boolean;
   onClick?: (e: React.SyntheticEvent) => void;
 };
 
-const Song: React.FC<Props> = ({ name, path, order, onClick }) => {
+const Song: React.FC<Props> = ({ isActive, name, path, order, onClick }) => {
   return (
     <SongItem onClick={onClick}>
-      <span>
+      <Text isActive={isActive}>
         {order}.{name}
-      </span>
+      </Text>
     </SongItem>
   );
 };
