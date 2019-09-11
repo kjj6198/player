@@ -23,20 +23,25 @@ const BarComponent = styled.div`
   z-index: 1;
 `;
 
-export const Indicator = styled.button.attrs<{ current: number }>(props => ({
+type IndicatorProps = {
+  current: number;
+  size?: number;
+};
+
+export const Indicator = styled.button.attrs<IndicatorProps>(props => ({
   style: {
     left: `${props.current * 100}%`,
   },
-}))<{ current: number }>`
+}))<IndicatorProps>`
   position: absolute;
   z-index: 1;
-  top: -11px;
+  top: ${props => -props.size / 2 + 4 || -11}px;
   left: 0;
-  width: 30px;
-  height: 30px;
+  width: ${props => props.size || 30}px;
+  height: ${props => props.size || 30}px;
   border-radius: 50%;
   border: 1px solid #ddd;
-  transform: translateX(-15px);
+  transform: translateX(${props => -props.size / 2 || -15}px);
   transform-origin: center;
   background-color: #fff;
   transition: box-shadow 0.2s ease;
@@ -66,9 +71,10 @@ export const ProgressFill = styled.div.attrs<{ current: number }>(props => ({
 type Props = {
   current: number;
   setCurrent: (current: number) => void;
+  indicatorSize?: number;
 };
 
-export default class Bar extends React.Component<Props> {
+export default class Bar extends React.PureComponent<Props> {
   barRef = createRef<HTMLDivElement>();
   indicatorRef = createRef<HTMLButtonElement>();
   slide$: Subscription;
@@ -83,19 +89,28 @@ export default class Bar extends React.Component<Props> {
             map(({ pageX }) => ({
               pageX,
               offsetX: this.props.current * width,
-            })),
-          ),
+            }))
+          )
         ),
         throttleTime(100),
-        switchMap(({ offsetX: initialX, pageX: x }: MouseEvent) => fromEvent<MouseEvent>(window, 'mousemove').pipe(
-          map(e => (initialX + e.pageX - x) / width),
-          /* make button blur when mouse up */
-          takeUntil(fromEvent(window, 'mouseup')
-            .pipe(tap(() => document.activeElement instanceof HTMLElement && document.activeElement.blur()))),
-          startWith(initialX / width),
-        )),
-        filter(progress => progress <= 1 || progress >= 0),
-        observeOn(animationFrameScheduler),
+        switchMap(({ offsetX: initialX, pageX: x }: MouseEvent) =>
+          fromEvent<MouseEvent>(window, 'mousemove').pipe(
+            map(e => (initialX + e.pageX - x) / width),
+            /* make button blur when mouse up */
+            takeUntil(
+              fromEvent(window, 'mouseup').pipe(
+                tap(
+                  () =>
+                    document.activeElement instanceof HTMLElement &&
+                    document.activeElement.blur()
+                )
+              )
+            ),
+            startWith(initialX / width)
+          )
+        ),
+        filter(progress => progress <= 1 && progress >= 0),
+        observeOn(animationFrameScheduler)
       )
       .subscribe(setCurrent);
   }
@@ -105,11 +120,15 @@ export default class Bar extends React.Component<Props> {
   }
 
   render() {
-    const { current } = this.props;
+    const { current, indicatorSize, ...rest } = this.props;
     return (
-      <BarComponent ref={this.barRef}>
+      <BarComponent ref={this.barRef} {...rest}>
         <ProgressFill current={this.props.current} />
-        <Indicator ref={this.indicatorRef} current={current} />
+        <Indicator
+          size={indicatorSize}
+          ref={this.indicatorRef}
+          current={current}
+        />
       </BarComponent>
     );
   }
