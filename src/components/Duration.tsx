@@ -17,10 +17,11 @@ function formatDuration(duration: number) {
   return `${minute} : ${second}`;
 }
 
-const Duration = styled.span.attrs<{duration: number}>(props => ({
-  children: formatDuration(props.duration)
-}))<{duration: number}>`
+const Duration = styled.span.attrs<{ duration: number }>(props => ({
+  children: formatDuration(props.duration),
+}))<{ duration: number }>`
   flex: 1;
+  margin: 5px;
   text-align: center;
   color: #000;
   font-size: 12px;
@@ -28,6 +29,7 @@ const Duration = styled.span.attrs<{duration: number}>(props => ({
   letter-spacing: -0.5px;
   // prevent number causes jump.
   font-variant-numeric: tabular-nums;
+  user-select: none;
 `;
 
 export default memo(Duration);
