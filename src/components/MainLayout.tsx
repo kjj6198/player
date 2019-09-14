@@ -30,7 +30,11 @@ const MainLayout: React.FC = () => {
           onPrevClick={handleSongListOperation('prev')}
         />
       ) : (
-        <UploadButton onFilesChanged={(files) => setContext({ songs: files, isFileUploaded: files !== null })} />
+        <UploadButton
+          onFilesChanged={files =>
+            setContext({ songs: files, isFileUploaded: files !== null })
+          }
+        />
       )}
     </Layout>
   );
