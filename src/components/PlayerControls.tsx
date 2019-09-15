@@ -7,8 +7,8 @@ import next from '../assets/next.svg';
 import useHotKey from '../hooks/useHotkey';
 
 const Button = styled.button`
-  width: 40px;
-  height: 40px;
+  width: 70px;
+  height: 70px;
   appearance: none;
   background-color: transparent;
   outline: none;
