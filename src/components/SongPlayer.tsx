@@ -42,7 +42,12 @@ const SongPlayer: React.FC<Props> = ({
   return audio ? (
     <PlayerWrapper>
       <h2>{name}</h2>
-      <Player src={url} onNextClick={onNextClick} onPrevClick={onPrevClick} />
+      <Player
+        src={url}
+        onNextClick={onNextClick}
+        onPrevClick={onPrevClick}
+        onEnded={onNextClick}
+      />
     </PlayerWrapper>
   ) : null;
 };
