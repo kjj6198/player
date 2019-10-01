@@ -2,21 +2,14 @@ import React, { createContext, useCallback, useState } from 'react';
 
 type State<T> = {
   state: T;
-  setContext: (state: T) => void;
-};
-
-export type Song = {
-  name: string;
-  path: string;
-  time: number;
-  file: File;
+  setContext: (partialState: any) => void;
 };
 
 export type AppState = {
   isLoading: boolean;
   isFileUploaded: boolean;
-  songs: FileList;
-  current: Song | null;
+  songs: FileList | null;
+  current: File | null;
 };
 
 export const AppContext = createContext<State<AppState>>({
@@ -24,7 +17,7 @@ export const AppContext = createContext<State<AppState>>({
   state: {
     isLoading: false,
     isFileUploaded: false,
-    songs: [],
+    songs: null,
     current: null
   }
 });
@@ -33,7 +26,7 @@ const Provider: React.FC = ({ children }: { children?: React.ReactNode }) => {
   const [state, setState] = useState<AppState>({
     isLoading: false,
     isFileUploaded: false,
-    songs: [],
+    songs: null,
     current: null
   });
 

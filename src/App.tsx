@@ -1,6 +1,7 @@
 import React from 'react';
 import Provider from './context/AppContext';
 import SideNav from './components/SideNav';
+import MainLayout from './components/MainLayout';
 import SongList from './components/SongList';
 
 const App: React.FC = () => {
@@ -10,7 +11,7 @@ const App: React.FC = () => {
         <SideNav>
           <SongList />
         </SideNav>
-        <>
+        <MainLayout />
       </div>
     </Provider>
   );

@@ -23,7 +23,7 @@ const UploadButton: React.FC<Props> = ({ onFilesChanged }) => {
 
   useEffect(() => {
     onFilesChanged(files);
-  });
+  }, [files]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
     setFile(e.target.files);
