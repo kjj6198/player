@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const SideNav = styled.div.attrs`
+const SideNav = styled.div`
   display: grid;
   position: fixed;
   left: 0;
