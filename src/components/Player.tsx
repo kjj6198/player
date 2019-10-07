@@ -4,6 +4,7 @@ import DraggableBar from './DraggableBar';
 import Duration from './Duration';
 import PlayerControls from './PlayerControls';
 import useHotKey from '../hooks/useHotkey';
+import Button, { ButtonGroup } from './Button';
 
 const PlayerCore = styled.audio.attrs(props => ({
   controls: true,
@@ -14,11 +15,23 @@ const PlayerCore = styled.audio.attrs(props => ({
   height: 0;
 `;
 
+const PlayerControlWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+`;
+
 const ProgressContainer = styled.div`
   width: 100%;
   height: 10px;
   border-radius: 5px;
   background-color: rgba(125, 125, 125, 0.4);
+`;
+
+const VolumeContainer = styled.div`
+  max-width: 150px;
+  width: 150px;
+  height: 10px;
 `;
 
 const Wrapper = styled.div`
@@ -55,6 +68,7 @@ const Player: React.FC<Props> = ({
 }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const skipTime = useRef<number>(0);
+  const [volume, setVolume] = useState(0.7);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playerState, setPlayerState] = useState<PlayerState | null>({
     currentTime: 0,
@@ -86,6 +100,12 @@ const Player: React.FC<Props> = ({
     }
   }, [isPlaying, src]);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = Math.min(volume, 1);
+    }
+  }, [volume, audioRef]);
+
   useHotKey(
     {
       '32': onCentralClick,
@@ -112,31 +132,52 @@ const Player: React.FC<Props> = ({
         <Duration duration={audioRef.current && audioRef.current.currentTime} />
         <ProgressContainer>
           <DraggableBar
+            indicatorSize={30}
             current={playerState.currentTime / playerState.duration}
             setCurrent={handleSetCurrent}
           />
         </ProgressContainer>
         <Duration duration={playerState.duration} />
       </Wrapper>
-      <PlayerControls
-        audioRef={audioRef}
-        isPlaying={isPlaying}
-        onPrevClick={onPrevClick}
-        onNextClick={onNextClick}
-        onCentralClick={onCentralClick}
-      />
-      <button onClick={handlePlaybackRate(0.5)}>0.5倍速</button>
-      <button onClick={handlePlaybackRate(1)}>1倍速</button>
-      <button onClick={handlePlaybackRate(2)}>2倍速</button>
-      <button onClick={handlePlaybackRate(1.25)}>1.25倍速</button>
-      <button onClick={handlePlaybackRate(1.5)}>1.5倍速</button>
-      <button onClick={handlePlaybackRate(1.75)}>1.75倍速</button>
-
-      <button onClick={() => (skipTime.current = 3)}>跳過 3 秒</button>
-      <button onClick={() => (skipTime.current = 5)}>跳過 5 秒</button>
-      <button onClick={() => (skipTime.current = 10)}>跳過 10 秒</button>
-      <button onClick={() => (skipTime.current = 15)}>跳過 15 秒</button>
-      <button onClick={() => (skipTime.current = 20)}>跳過 20 秒</button>
+      <PlayerControlWrapper>
+        <PlayerControls
+          audioRef={audioRef}
+          isPlaying={isPlaying}
+          onPrevClick={onPrevClick}
+          onNextClick={onNextClick}
+          onCentralClick={onCentralClick}
+        />
+      </PlayerControlWrapper>
+      <VolumeContainer>
+        <DraggableBar
+          indicatorSize={15}
+          current={volume}
+          setCurrent={curr => setVolume(curr)}
+        />
+      </VolumeContainer>
+      <ButtonGroup>
+        {[0.5, 1, 1.25, 1.5, 1.75, 2].map(rate => (
+          <Button
+            key={rate}
+            status={skipTime.current === rate ? 'active' : null}
+            theme="light"
+            onClick={handlePlaybackRate(rate)}
+          >
+            {rate} 倍速
+          </Button>
+        ))}
+      </ButtonGroup>
+      <ButtonGroup>
+        {[3, 5, 10, 15, 20].map(sec => (
+          <Button
+            key={sec}
+            theme="light"
+            onClick={() => (skipTime.current = sec)}
+          >
+            跳過前 {sec} 秒
+          </Button>
+        ))}
+      </ButtonGroup>
       <PlayerCore
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
